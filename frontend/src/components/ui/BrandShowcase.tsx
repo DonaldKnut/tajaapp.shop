@@ -470,7 +470,7 @@ export function BrandShowcase() {
             onMouseEnter={() => setIsPlaying(false)}
             onMouseLeave={() => setIsPlaying(true)}
           >
-            <Card className="max-w-4xl mx-auto overflow-hidden">
+            <Card className="max-w-5xl mx-auto overflow-hidden bg-gradient-to-br from-white to-gray-50 border-0 shadow-xl">
               <CardContent className="p-0">
                 <div className="overflow-hidden">
                   <motion.div
@@ -479,36 +479,55 @@ export function BrandShowcase() {
                     transition={{ type: "spring", stiffness: 80, damping: 20 }}
                   >
                     {testimonials.map((t, idx) => (
-                      <div key={idx} className="min-w-full shrink-0 grow-0 p-8">
-                        <div className="text-center">
-                          <div className="w-20 h-20 rounded-full bg-gray-200 mx-auto mb-6 flex items-center justify-center">
-                            <Users className="h-10 w-10 text-gray-400" />
+                      <div key={idx} className="min-w-full shrink-0 grow-0 p-8 md:p-12">
+                        <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-6 md:gap-10 items-center">
+                          {/* Avatar */}
+                          <div className="relative mx-auto md:mx-0">
+                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full ring-4 ring-white shadow-lg overflow-hidden">
+                              <Image
+                                src={t.avatar}
+                                alt={t.name}
+                                width={112}
+                                height={112}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           </div>
-                          <AnimatePresence mode="wait">
-                            <motion.blockquote
-                              key={currentTestimonial === idx ? `q-${idx}` : `q-hidden-${idx}`}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              exit={{ opacity: 0, y: -10 }}
-                              transition={{ duration: 0.35 }}
-                              className="text-xl text-gray-700 mb-6 italic"
-                            >
-                              “{t.content}”
-                            </motion.blockquote>
-                          </AnimatePresence>
-                          <div className="flex items-center justify-center space-x-2 mb-4">
-                            {[...Array(t.rating)].map((_, i) => (
-                              <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                            ))}
+
+                          {/* Content */}
+                          <div className="relative">
+                            {/* Decorative quote */}
+                            <div className="absolute -top-4 -left-2 text-taja-primary/20 select-none text-6xl leading-none">“</div>
+                            <AnimatePresence mode="wait">
+                              <motion.blockquote
+                                key={currentTestimonial === idx ? `q-${idx}` : `q-hidden-${idx}`}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.35 }}
+                                className="text-lg md:text-xl text-gray-800 mb-4 md:mb-6"
+                              >
+                                {t.content}
+                              </motion.blockquote>
+                            </AnimatePresence>
+
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="font-semibold text-gray-900 text-base md:text-lg">{t.name}</div>
+                              {t.verified && (
+                                <Badge className="bg-green-100 text-green-800 border-green-200 h-6">
+                                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                                  Verified
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-500 mb-3">{t.role}</div>
+
+                            <div className="flex items-center gap-1">
+                              {[...Array(t.rating)].map((_, i) => (
+                                <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                              ))}
+                            </div>
                           </div>
-                          <div className="font-semibold text-gray-900">{t.name}</div>
-                          <div className="text-gray-600">{t.role}</div>
-                          {t.verified && (
-                            <Badge className="mt-2 bg-green-100 text-green-800 border-green-200">
-                              <CheckCircle className="h-3 w-3 mr-1" />
-                              Verified Seller
-                            </Badge>
-                          )}
                         </div>
                       </div>
                     ))}
