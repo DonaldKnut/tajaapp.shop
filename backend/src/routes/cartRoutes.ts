@@ -45,7 +45,7 @@ router.post(
         );
         if (!p) continue;
         existing.items.push({
-          product: p._id,
+          product: (p as any)._id as any,
           title: p.title,
           price: p.price,
           quantity: qty,
@@ -89,7 +89,7 @@ router.post(
       }).select("title price images shop");
       if (!p) throw new ApiErrorClass("Product unavailable", 404);
       cart.items.push({
-        product: p._id,
+        product: (p as any)._id as any,
         title: p.title,
         price: p.price,
         quantity: qty,

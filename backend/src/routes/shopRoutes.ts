@@ -5,7 +5,7 @@ import {
   optionalAuth,
 } from "../middleware/authMiddleware";
 import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
-import { Shop } from "../models/Shop";
+import Shop from "../models/Shop";
 
 const router = express.Router();
 

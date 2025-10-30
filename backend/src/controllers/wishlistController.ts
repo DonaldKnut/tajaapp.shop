@@ -237,7 +237,8 @@ export const getWishlistStats = asyncHandler(
         typeof item.product === "object" &&
         "price" in item.product
       ) {
-        totalValue += item.product.price;
+        const price = Number((item as any).product?.price ?? 0);
+        totalValue += isNaN(price) ? 0 : price;
 
         const category = (item.product as any).category || "Other";
         categories[category] = (categories[category] || 0) + 1;
@@ -258,6 +259,7 @@ export const getWishlistStats = asyncHandler(
     });
   }
 );
+
 
 
 

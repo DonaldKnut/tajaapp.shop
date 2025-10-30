@@ -56,20 +56,6 @@ import {
   BarChart3,
   PieChart,
   Activity,
-  Flash,
-  Thunder,
-  Fire,
-  Flame,
-  Sun,
-  Moon,
-  Cloud,
-  Wind,
-  Droplets,
-  Thermometer,
-  Gauge,
-  Timer,
-  Stopwatch,
-  Hourglass,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IProduct } from "../types";
+import { IProduct, IProductModel } from "../types";
 
 const productSchema = new Schema<IProduct>(
   {
@@ -243,4 +243,6 @@ productSchema.methods.checkAvailability = function (quantity = 1) {
   return this.inventory.quantity >= quantity;
 };
 
-export const Product = mongoose.model<IProduct>("Product", productSchema);
+const Product = mongoose.model<IProduct, IProductModel>("Product", productSchema);
+export default Product;
+export type { IProduct } from "../types";

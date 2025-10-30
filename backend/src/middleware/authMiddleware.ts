@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { User } from "../models/User";
+import User from "../models/User";
 import { asyncHandler, ApiErrorClass } from "./errorMiddleware";
 
 // Extend Request interface to include user
@@ -101,7 +101,7 @@ export const requireVerification = (
 // Check if user owns the shop
 export const checkShopOwnership = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { Shop } = await import("../models/Shop");
+    const Shop = (await import("../models/Shop")).default;
 
     const shopId = req.params.shopId || req.body.shopId;
 
@@ -122,7 +122,7 @@ export const checkShopOwnership = asyncHandler(
       throw new ApiErrorClass("Not authorized to access this shop", 403);
     }
 
-    req.shop = shop;
+    (req as any).shop = shop;
     next();
   }
 );
@@ -154,12 +154,12 @@ export const optionalAuth = asyncHandler(
 export const generateToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET!, {
     expiresIn: process.env.JWT_EXPIRES_IN || "30d",
-  });
+  } as jwt.SignOptions);
 };
 
 // Generate Refresh Token
 export const generateRefreshToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET!, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
-  });
+  } as jwt.SignOptions);
 };

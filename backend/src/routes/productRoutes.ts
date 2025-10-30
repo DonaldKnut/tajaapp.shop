@@ -1,7 +1,7 @@
 import express from "express";
 import { protect, optionalAuth } from "../middleware/authMiddleware";
 import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
-import { Product } from "../models/Product";
+import Product from "../models/Product";
 
 const router = express.Router();
 
@@ -78,7 +78,7 @@ router.get(
       )
       .skip(skip)
       .limit(limit)
-      .sort(sort);
+      .sort(sort as any);
 
     const total = await Product.countDocuments(query);
 
@@ -215,7 +215,7 @@ router.delete(
       throw new ApiErrorClass("Not authorized to delete this product", 403);
     }
 
-    await product.remove();
+    await product.deleteOne();
 
     res.json({
       success: true,

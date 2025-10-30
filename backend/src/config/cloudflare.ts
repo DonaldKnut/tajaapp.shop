@@ -1,5 +1,8 @@
-import { CloudflareImages } from "cloudflare-images";
-import { CloudflareStream } from "cloudflare-stream";
+// Use untyped imports to avoid TS mismatches with library typings
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CloudflareImages: any = require("cloudflare-images");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CloudflareStream: any = require("cloudflare-stream");
 
 // Cloudflare configuration
 const cloudflareConfig = {
@@ -10,13 +13,13 @@ const cloudflareConfig = {
 };
 
 // Initialize Cloudflare Images client
-export const cloudflareImages = new CloudflareImages({
+export const cloudflareImages: any = new CloudflareImages({
   accountId: cloudflareConfig.accountId,
   apiToken: cloudflareConfig.apiToken,
 });
 
 // Initialize Cloudflare Stream client
-export const cloudflareStream = new CloudflareStream({
+export const cloudflareStream: any = new CloudflareStream({
   accountId: cloudflareConfig.accountId,
   apiToken: cloudflareConfig.apiToken,
 });
@@ -27,16 +30,16 @@ export const uploadImageToCloudflare = async (
   filename: string
 ) => {
   try {
-    const upload = await cloudflareImages.upload({
+    const upload: any = await cloudflareImages.upload({
       file: file,
       filename: filename,
     });
 
     return {
       success: true,
-      url: `${cloudflareConfig.imagesDeliveryUrl}/${upload.result.id}`,
-      id: upload.result.id,
-      variants: upload.result.variants,
+      url: `${cloudflareConfig.imagesDeliveryUrl}/${upload.result?.id}`,
+      id: upload.result?.id,
+      variants: upload.result?.variants,
     };
   } catch (error) {
     console.error("Cloudflare Images upload error:", error);
@@ -50,17 +53,17 @@ export const uploadVideoToCloudflare = async (
   filename: string
 ) => {
   try {
-    const upload = await cloudflareStream.upload({
+    const upload: any = await cloudflareStream.upload({
       file: file,
       filename: filename,
     });
 
     return {
       success: true,
-      url: `${cloudflareConfig.streamDeliveryUrl}/${upload.result.uid}`,
-      uid: upload.result.uid,
-      thumbnail: upload.result.thumbnail,
-      duration: upload.result.duration,
+      url: `${cloudflareConfig.streamDeliveryUrl}/${upload.result?.uid}`,
+      uid: upload.result?.uid,
+      thumbnail: upload.result?.thumbnail,
+      duration: upload.result?.duration,
     };
   } catch (error) {
     console.error("Cloudflare Stream upload error:", error);
@@ -91,4 +94,5 @@ export const deleteVideoFromCloudflare = async (videoUid: string) => {
 };
 
 export default cloudflareConfig;
+
 

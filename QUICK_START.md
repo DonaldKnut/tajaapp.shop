@@ -186,3 +186,4 @@ Since Termii needs a work email:
 **After installing dependencies, your app should start! 🚀**
 
 
+

@@ -68,10 +68,8 @@ export default function SellerSetupPage() {
       const [parent, child] = name.split(".");
       setFormData((prev) => ({
         ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: value,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [parent]: { ...(prev as any)[parent], [child]: value },
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));

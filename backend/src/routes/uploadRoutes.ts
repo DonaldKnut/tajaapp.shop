@@ -1,11 +1,8 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import multer from "multer";
 import { protect } from "../middleware/authMiddleware";
 import { asyncHandler } from "../middleware/errorMiddleware";
-import {
-  uploadImageToCloudflare,
-  uploadVideoToCloudflare,
-} from "../config/cloudflare";
+import { uploadBufferToR2 } from "../config/r2";
 
 const router = express.Router();
 
@@ -53,7 +50,7 @@ router.post(
   "/image",
   protect,
   upload.single("image"),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -62,17 +59,18 @@ router.post(
     }
 
     try {
-      const result = await uploadImageToCloudflare(
-        req.file.buffer,
-        req.file.originalname
-      );
+      const result = await uploadBufferToR2({
+        buffer: req.file.buffer,
+        originalName: req.file.originalname,
+        contentType: req.file.mimetype,
+        folder: "images",
+      });
 
       res.json({
         success: true,
         data: {
           url: result.url,
-          id: result.id,
-          variants: result.variants,
+          key: result.key,
         },
         message: "Image uploaded successfully",
       });
@@ -93,7 +91,7 @@ router.post(
   "/video",
   protect,
   upload.single("video"),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -102,18 +100,18 @@ router.post(
     }
 
     try {
-      const result = await uploadVideoToCloudflare(
-        req.file.buffer,
-        req.file.originalname
-      );
+      const result = await uploadBufferToR2({
+        buffer: req.file.buffer,
+        originalName: req.file.originalname,
+        contentType: req.file.mimetype,
+        folder: "videos",
+      });
 
       res.json({
         success: true,
         data: {
           url: result.url,
-          uid: result.uid,
-          thumbnail: result.thumbnail,
-          duration: result.duration,
+          key: result.key,
         },
         message: "Video uploaded successfully",
       });
@@ -134,7 +132,7 @@ router.post(
   "/images",
   protect,
   upload.array("images", 10),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
       return res.status(400).json({
         success: false,
@@ -145,7 +143,12 @@ router.post(
     try {
       const files = req.files as Express.Multer.File[];
       const uploadPromises = files.map((file) =>
-        uploadImageToCloudflare(file.buffer, file.originalname)
+        uploadBufferToR2({
+          buffer: file.buffer,
+          originalName: file.originalname,
+          contentType: file.mimetype,
+          folder: "images",
+        })
       );
 
       const results = await Promise.all(uploadPromises);
@@ -153,9 +156,8 @@ router.post(
       res.json({
         success: true,
         data: {
-          urls: results.map((result) => result.url),
-          ids: results.map((result) => result.id),
-          variants: results.map((result) => result.variants),
+          urls: results.map((r) => r.url),
+          keys: results.map((r) => r.key),
         },
         message: "Images uploaded successfully",
       });
@@ -176,7 +178,7 @@ router.post(
   "/media",
   protect,
   upload.array("media", 10),
-  asyncHandler(async (req, res) => {
+  asyncHandler(async (req: Request, res: Response) => {
     if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
       return res.status(400).json({
         success: false,
@@ -188,40 +190,24 @@ router.post(
       const files = req.files as Express.Multer.File[];
       const uploadPromises = files.map(async (file) => {
         const isVideo = file.mimetype.startsWith("video/");
-
-        if (isVideo) {
-          const result = await uploadVideoToCloudflare(
-            file.buffer,
-            file.originalname
-          );
-          return {
-            type: "video",
-            url: result.url,
-            uid: result.uid,
-            thumbnail: result.thumbnail,
-            duration: result.duration,
-          };
-        } else {
-          const result = await uploadImageToCloudflare(
-            file.buffer,
-            file.originalname
-          );
-          return {
-            type: "image",
-            url: result.url,
-            id: result.id,
-            variants: result.variants,
-          };
-        }
+        const result = await uploadBufferToR2({
+          buffer: file.buffer,
+          originalName: file.originalname,
+          contentType: file.mimetype,
+          folder: isVideo ? "videos" : "images",
+        });
+        return {
+          type: isVideo ? "video" : "image",
+          url: result.url,
+          key: result.key,
+        };
       });
 
       const results = await Promise.all(uploadPromises);
 
       res.json({
         success: true,
-        data: {
-          media: results,
-        },
+        data: { media: results },
         message: "Media files uploaded successfully",
       });
     } catch (error) {

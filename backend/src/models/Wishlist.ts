@@ -1,30 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUser } from "./User";
-import { IProduct } from "./Product";
-
-export interface IWishlistItem {
-  product: IProduct["_id"];
-  addedAt: Date;
-}
-
-export interface IWishlist extends Document {
-  user: IUser["_id"];
-  items: IWishlistItem[];
-  createdAt: Date;
-  updatedAt: Date;
-
-  // Instance methods
-  addItem(productId: string): Promise<IWishlist>;
-  removeItem(productId: string): Promise<IWishlist>;
-  hasItem(productId: string): boolean;
-  clearWishlist(): Promise<IWishlist>;
-}
-
-export interface IWishlistModel extends mongoose.Model<IWishlist> {
-  // Static methods
-  findByUser(userId: string): Promise<IWishlist | null>;
-  getPopularProducts(limit?: number): Promise<any[]>;
-}
+import mongoose, { Schema, Document, Model } from "mongoose";
+import { IWishlist, IWishlistItem, IWishlistModel } from "../types";
 
 const wishlistItemSchema = new Schema<IWishlistItem>({
   product: {

@@ -82,16 +82,18 @@ export const bookDelivery = asyncHandler(
         deliveryAddress,
         recipientPhone,
         packageDescription ||
-          order.items.map((item) => item.product.title).join(", "),
-        packageValue || order.totalAmount
+          order.items
+            .map((item: any) => (item?.product as any)?.title || "Item")
+            .join(", "),
+        packageValue || (order as any).totalAmount || order.totals.total
       );
 
       // Update order with delivery info
-      order.deliveryInfo = {
+      (order as any).deliveryInfo = {
         trackingNumber: deliveryBooking.trackingNumber,
         provider: deliveryBooking.provider,
-        estimatedDelivery: deliveryBooking.estimatedDelivery,
         status: "confirmed",
+        estimatedDelivery: deliveryBooking.estimatedDelivery,
         cost: deliveryBooking.cost,
       };
 
@@ -326,6 +328,7 @@ function mapProviderStatusToInternal(providerStatus: string): string {
 
   return statusMap[providerStatus.toLowerCase()] || providerStatus;
 }
+
 
 
 

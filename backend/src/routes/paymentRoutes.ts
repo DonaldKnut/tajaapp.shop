@@ -45,9 +45,9 @@ router.post(
         redirect_url: `${process.env.FRONTEND_URL}/orders/${order._id}/success`,
         payment_options: "card,banktransfer,ussd",
         customer: {
-          email: order.buyer.email,
-          phonenumber: order.buyer.phone,
-          name: order.buyer.fullName,
+          email: (order as any).buyer?.email,
+          phonenumber: (order as any).buyer?.phone,
+          name: (order as any).buyer?.fullName,
         },
         customizations: {
           title: "Taja.Shop Payment",
@@ -56,7 +56,7 @@ router.post(
         },
         meta: {
           orderId: order._id.toString(),
-          shopId: order.shop._id.toString(),
+          shopId: ((order as any).shop?._id ?? (order as any).shop)?.toString(),
         },
       };
 

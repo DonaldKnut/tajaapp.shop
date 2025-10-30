@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { IShop } from "../types";
+import mongoose, { Schema, Model } from "mongoose";
+import { IShop, IShopModel } from "../types";
 
 const shopSchema = new Schema<IShop>(
   {
@@ -291,4 +291,5 @@ shopSchema.methods.updatePerformanceMetrics = async function () {
   await this.save();
 };
 
-export const Shop = mongoose.model<IShop>("Shop", shopSchema);
+const Shop = mongoose.model<IShop, IShopModel>("Shop", shopSchema);
+export default Shop;

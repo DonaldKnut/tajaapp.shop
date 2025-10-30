@@ -188,7 +188,8 @@ export const getCoupon = asyncHandler(async (req: Request, res: Response) => {
   // Check access (admin or owner)
   if (
     req.user.role !== "admin" &&
-    coupon.createdBy._id.toString() !== req.user._id.toString()
+    ((coupon as any).createdBy?._id?.toString?.() || (coupon as any).createdBy?.toString?.()) !==
+      req.user._id.toString()
   ) {
     throw new ApiErrorClass("Access denied", 403);
   }
@@ -385,8 +386,8 @@ export const validateCoupon = asyncHandler(
 
       // Check specific products
       if (coupon.applicableProducts.length > 0) {
-        const applicableProductIds = coupon.applicableProducts.map((p) =>
-          p._id.toString()
+        const applicableProductIds = coupon.applicableProducts.map((p: any) =>
+          (p?._id ?? p)?.toString()
         );
         isApplicable = productIds.some((id: string) =>
           applicableProductIds.includes(id)
@@ -486,6 +487,7 @@ export const generateCouponCode = asyncHandler(
     });
   }
 );
+
 
 
 

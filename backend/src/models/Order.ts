@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IOrder, IOrderItem, IOrderTimeline } from "../types";
+import { IOrder, IOrderItem, IOrderTimeline, IOrderModel } from "../types";
 
 const orderItemSchema = new Schema<IOrderItem>({
   product: {
@@ -247,7 +247,7 @@ orderSchema.statics.getOrdersByStatus = function (
   status: string,
   userType: "buyer" | "seller" = "buyer"
 ) {
-  const query = userType === "buyer" ? { buyer: userId } : { seller: userId };
+  const query: any = userType === "buyer" ? { buyer: userId } : { seller: userId };
   if (status !== "all") {
     query.status = status;
   }
@@ -372,4 +372,5 @@ orderSchema.methods.canUpdateStatus = function (newStatus: string): boolean {
   return statusFlow[this.status]?.includes(newStatus) || false;
 };
 
-export const Order = mongoose.model<IOrder>("Order", orderSchema);
+const Order = mongoose.model<IOrder, IOrderModel>("Order", orderSchema);
+export default Order;

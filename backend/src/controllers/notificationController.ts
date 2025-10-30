@@ -4,11 +4,18 @@ import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
 import webpush from "web-push";
 
 // Configure web-push
-webpush.setVapidDetails(
-  "mailto:support@taja.shop",
-  process.env.VAPID_PUBLIC_KEY || "",
-  process.env.VAPID_PRIVATE_KEY || ""
-);
+const vapidSubject = process.env.VAPID_SUBJECT || "mailto:support@taja.shop";
+const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || "";
+const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || "";
+if (vapidPublicKey && vapidPrivateKey) {
+  webpush.setVapidDetails(
+    vapidSubject,
+    vapidPublicKey,
+    vapidPrivateKey
+  );
+} else {
+  console.warn("web-push VAPID keys are not set; push notifications are disabled in this environment.");
+}
 
 // @desc    Get user notifications
 // @route   GET /api/notifications
@@ -225,7 +232,7 @@ export const sendTestNotification = asyncHandler(
       title,
       message,
       {
-        priority: "normal",
+        priority: "medium",
         category: "test",
       }
     );

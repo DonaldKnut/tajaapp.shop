@@ -1,6 +1,6 @@
 import { Server as SocketIOServer } from "socket.io";
 import jwt from "jsonwebtoken";
-import { User } from "../models/User";
+import User from "../models/User";
 
 interface AuthenticatedSocket extends SocketIOServer {
   userId?: string;
@@ -66,7 +66,7 @@ export const setupSocketIO = (io: SocketIOServer) => {
         attachments?: string[];
       }) => {
         try {
-          const { Chat } = await import("../models/Chat");
+          const Chat = (await import("../models/Chat")).default;
 
           const chat = await Chat.findById(data.chatId);
           if (chat && chat.isParticipant(socket.userId)) {
@@ -116,7 +116,7 @@ export const setupSocketIO = (io: SocketIOServer) => {
     // Notification events
     socket.on("mark_notifications_read", async () => {
       try {
-        const { Notification } = await import("../models/Notification");
+        const Notification = (await import("../models/Notification")).default;
         await Notification.markAllAsRead(socket.userId);
 
         socket.emit("notifications_marked_read");

@@ -55,19 +55,22 @@ interface VerifyPaymentResponse {
 
 class FlutterwaveService {
   private baseURL = "https://api.flutterwave.com/v3";
-  private secretKey: string;
-  private publicKey: string;
+  private secretKey: string | undefined;
+  private publicKey: string | undefined;
 
   constructor() {
-    this.secretKey = process.env.FLUTTERWAVE_SECRET_KEY!;
-    this.publicKey = process.env.FLUTTERWAVE_PUBLIC_KEY!;
+    this.secretKey = process.env.FLUTTERWAVE_SECRET_KEY;
+    this.publicKey = process.env.FLUTTERWAVE_PUBLIC_KEY;
+  }
 
+  private checkConfiguration() {
     if (!this.secretKey || !this.publicKey) {
       throw new Error("Flutterwave keys not configured");
     }
   }
 
   private getHeaders() {
+    this.checkConfiguration();
     return {
       Authorization: `Bearer ${this.secretKey}`,
       "Content-Type": "application/json",

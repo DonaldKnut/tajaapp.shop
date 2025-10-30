@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/authMiddleware";
 import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
-import { Chat } from "../models/Chat";
+import Chat from "../models/Chat";
 
 const router = express.Router();
 

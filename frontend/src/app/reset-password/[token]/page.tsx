@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -253,7 +254,8 @@ export default function ResetPasswordPage() {
                   value={formData.password}
                   onChange={handleChange}
                   onBlur={() => {
-                    const single = z.object({ password: passwordSchema.shape.password as any });
+                    const pwdBase: any = (passwordSchema as any)._def?.schema ?? passwordSchema;
+                    const single = z.object({ password: (pwdBase.shape as any).password as any });
                     const parsed = single.safeParse({ password: formData.password });
                     if (!parsed.success) {
                       setErrors({ ...errors, password: parsed.error.issues[0]?.message });

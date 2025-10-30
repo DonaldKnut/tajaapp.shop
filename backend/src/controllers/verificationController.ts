@@ -181,7 +181,7 @@ export const submitVerification = asyncHandler(async (req: Request, res: Respons
   }
 
   // Create notification for admins
-  await Notification.createForAdmins(
+  await (Notification as any).createForAdmins(
     'verification_submitted',
     'New Verification Submitted',
     `${user.fullName} has submitted verification documents`,
@@ -277,7 +277,7 @@ export const reviewVerification = asyncHandler(async (req: Request, res: Respons
   }
 
   // Update verification status
-  const newStatus = action === 'approve' ? 'verified' : 'rejected'
+  const newStatus = action === 'approve' ? 'approved' : 'rejected'
   user.verificationStatus = newStatus
   user.isVerified = action === 'approve'
 
@@ -301,7 +301,7 @@ export const reviewVerification = asyncHandler(async (req: Request, res: Respons
     ? 'Congratulations! Your seller verification has been approved.'
     : `Your verification was rejected. Reason: ${reason}`
 
-  await Notification.createForUser(
+  await (Notification as any).createForUser(
     user._id,
     'verification_reviewed',
     notificationTitle,
@@ -376,6 +376,7 @@ export const resubmitVerification = asyncHandler(async (req: Request, res: Respo
     message: 'Verification reset. You can now submit new documents.'
   })
 })
+
 
 
 

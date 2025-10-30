@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { ITransaction } from "../types";
+import mongoose, { Schema, Model } from "mongoose";
+import { ITransaction, ITransactionModel } from "../types";
 
 const transactionSchema = new Schema<ITransaction>(
   {
@@ -159,7 +159,7 @@ transactionSchema.methods.markAsFailed = function (gatewayResponse?: any) {
   return this.updateStatus("failed", gatewayResponse);
 };
 
-export const Transaction = mongoose.model<ITransaction>(
+export const Transaction = mongoose.model<ITransaction, ITransactionModel>(
   "Transaction",
   transactionSchema
 );

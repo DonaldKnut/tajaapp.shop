@@ -163,14 +163,14 @@ chatSchema.methods.addMessage = function (
 ) {
   const newMessage: IMessage = {
     _id: new mongoose.Types.ObjectId().toString(),
-    sender: senderId,
+    sender: new mongoose.Types.ObjectId(senderId) as any,
     content,
     type: type as any,
     attachments,
     metadata,
     readBy: [
       {
-        user: senderId,
+        user: new mongoose.Types.ObjectId(senderId) as any,
         readAt: new Date(),
       },
     ],
@@ -233,4 +233,5 @@ chatSchema.methods.archiveChat = function (userId: string) {
   return this.save();
 };
 
-export const Chat = mongoose.model<IChat, IChatModel>("Chat", chatSchema);
+const Chat = mongoose.model<IChat, IChatModel>("Chat", chatSchema);
+export default Chat;

@@ -138,7 +138,9 @@ export default function RegisterPage() {
       return;
     }
     // Validate single field
-    const singleShape: any = { [name]: (registerSchema.shape as any)[name] };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const baseSchema: any = (registerSchema as any)._def?.schema ?? registerSchema;
+    const singleShape: any = { [name]: (baseSchema.shape as any)[name] };
     const single = z.object(singleShape);
     const parsed = single.safeParse({ [name]: (formData as any)[name] });
     if (!parsed.success) {

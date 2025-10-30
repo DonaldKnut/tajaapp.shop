@@ -109,7 +109,6 @@ import {
   Diamond,
   Gem,
   Sparkles,
-  Magic,
   Wand2,
   Rocket,
   Target,
@@ -119,71 +118,8 @@ import {
   PieChart,
   Activity,
   Zap as ZapIcon,
-  Flash,
-  Thunder,
-  Fire,
-  Flame,
-  Sun,
-  Moon,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  Wind,
-  Droplets,
-  Thermometer,
-  Gauge,
-  Timer,
-  Stopwatch,
-  Hourglass,
-  Clock3,
   Calendar as CalendarIcon,
-  CalendarDays,
-  CalendarCheck,
-  CalendarX,
-  CalendarPlus,
-  CalendarMinus,
-  CalendarRange,
-  CalendarSearch,
-  CalendarHeart,
-  CalendarStar,
-  CalendarClock,
-  CalendarUser,
-  CalendarEdit,
-  CalendarTrash,
-  CalendarSettings,
-  CalendarDownload,
-  CalendarUpload,
-  CalendarShare,
-  CalendarCopy,
-  CalendarMove,
-  CalendarArchive,
-  CalendarUnarchive,
-  CalendarLock,
-  CalendarUnlock,
-  CalendarEye,
-  CalendarEyeOff,
-  CalendarPlus2,
-  CalendarMinus2,
-  CalendarX2,
-  CalendarCheck2,
-  CalendarHeart2,
-  CalendarStar2,
-  CalendarClock2,
-  CalendarUser2,
-  CalendarEdit2,
-  CalendarTrash2,
-  CalendarSettings2,
-  CalendarDownload2,
-  CalendarUpload2,
-  CalendarShare2,
-  CalendarCopy2,
-  CalendarMove2,
-  CalendarArchive2,
-  CalendarUnarchive2,
-  CalendarLock2,
-  CalendarUnlock2,
-  CalendarEye2,
-  CalendarEyeOff2,
+  
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -396,10 +332,8 @@ export default function AdvancedProductUploadPage() {
       const [parent, child] = field.split(".");
       setFormData((prev) => ({
         ...prev,
-        [parent]: {
-          ...prev[parent as keyof FormData],
-          [child]: value,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [parent]: { ...(prev as any)[parent], [child]: value },
       }));
     } else {
       setFormData((prev) => ({
@@ -1566,4 +1500,5 @@ export default function AdvancedProductUploadPage() {
     </div>
   );
 }
+
 

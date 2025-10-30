@@ -1,67 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUser } from "./User";
+import mongoose, { Schema } from "mongoose";
+import { INotificationCenter, INotificationCenterModel } from "../types";
 
-export interface INotificationCenter extends Document {
-  user: IUser["_id"];
-  type:
-    | "order"
-    | "payment"
-    | "chat"
-    | "review"
-    | "shop"
-    | "system"
-    | "promotion";
-  title: string;
-  message: string;
-  data?: any; // Additional data payload
-  read: boolean;
-  priority: "low" | "normal" | "high" | "urgent";
-  category: string;
-  actionUrl?: string;
-  imageUrl?: string;
-  expiresAt?: Date;
-  createdAt: Date;
-  readAt?: Date;
-}
-
-export interface INotificationCenterModel
-  extends mongoose.Model<INotificationCenter> {
-  createForUser(
-    userId: string,
-    type: string,
-    title: string,
-    message: string,
-    options?: Partial<INotificationCenter>
-  ): Promise<INotificationCenter>;
-
-  createBulkNotifications(
-    userIds: string[],
-    type: string,
-    title: string,
-    message: string,
-    options?: Partial<INotificationCenter>
-  ): Promise<number>;
-
-  markAsRead(notificationIds: string[], userId: string): Promise<number>;
-  markAllAsRead(userId: string): Promise<number>;
-  getUnreadCount(userId: string): Promise<number>;
-  getUserNotifications(
-    userId: string,
-    options?: {
-      page?: number;
-      limit?: number;
-      type?: string;
-      unreadOnly?: boolean;
-    }
-  ): Promise<{
-    notifications: INotificationCenter[];
-    total: number;
-    unreadCount: number;
-  }>;
-  cleanupExpired(): Promise<number>;
-}
-
-const notificationCenterSchema = new Schema<INotificationCenter>(
+const notificationCenterSchema = new Schema<any>(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -101,8 +41,8 @@ const notificationCenterSchema = new Schema<INotificationCenter>(
     },
     priority: {
       type: String,
-      enum: ["low", "normal", "high", "urgent"],
-      default: "normal",
+      enum: ["low", "medium", "high"],
+      default: "medium",
     },
     category: {
       type: String,
@@ -159,11 +99,11 @@ notificationCenterSchema.statics.createForUser = async function (
   });
 
   // Emit real-time notification via Socket.io
-  const io = require("../config/socket").getIO();
+  const io = require("../config/socket").getIO?.();
   if (io) {
     io.to(`user_${userId}`).emit("new_notification", {
       notification,
-      unreadCount: await this.getUnreadCount(userId),
+      unreadCount: await (this as any).getUnreadCount(userId),
     });
   }
 
@@ -188,10 +128,10 @@ notificationCenterSchema.statics.createBulkNotifications = async function (
   const result = await this.insertMany(notifications);
 
   // Emit real-time notifications
-  const io = require("../config/socket").getIO();
+  const io = require("../config/socket").getIO?.();
   if (io) {
     for (const userId of userIds) {
-      const unreadCount = await this.getUnreadCount(userId);
+      const unreadCount = await (this as any).getUnreadCount(userId);
       io.to(`user_${userId}`).emit("new_notification", {
         notification: result.find((n) => n.user.toString() === userId),
         unreadCount,
@@ -221,9 +161,9 @@ notificationCenterSchema.statics.markAsRead = async function (
   );
 
   // Emit updated unread count
-  const io = require("../config/socket").getIO();
+  const io = require("../config/socket").getIO?.();
   if (io) {
-    const unreadCount = await this.getUnreadCount(userId);
+    const unreadCount = await (this as any).getUnreadCount(userId);
     io.to(`user_${userId}`).emit("notifications_read", {
       readCount: result.modifiedCount,
       unreadCount,
@@ -311,7 +251,7 @@ notificationCenterSchema.statics.getUserNotifications = async function (
   const total = await this.countDocuments(filter);
 
   // Get unread count
-  const unreadCount = await this.getUnreadCount(userId);
+  const unreadCount = await (this as any).getUnreadCount(userId);
 
   return {
     notifications,
@@ -336,12 +276,13 @@ notificationCenterSchema.pre("save", function (next) {
   next();
 });
 
-const NotificationCenter = mongoose.model<
-  INotificationCenter,
-  INotificationCenterModel
->("NotificationCenter", notificationCenterSchema);
+const NotificationCenter = mongoose.model<any, any>(
+  "NotificationCenter",
+  notificationCenterSchema
+);
 
 export default NotificationCenter;
+
 
 
 

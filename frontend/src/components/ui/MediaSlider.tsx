@@ -276,7 +276,9 @@ export function MediaSlider({
         ) : (
           <div className="relative w-full h-full">
             <video
-              ref={(el) => (videoRefs.current[currentIndex] = el)}
+              ref={(el) => {
+                videoRefs.current[currentIndex] = el as HTMLVideoElement | null;
+              }}
               src={currentMedia.url}
               poster={currentMedia.thumbnail}
               className="w-full h-full object-cover"
@@ -547,4 +549,5 @@ export function MediaSlider({
     </div>
   );
 }
+
 

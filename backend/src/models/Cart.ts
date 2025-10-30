@@ -1,22 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { ICart, ICartItem } from "../types";
 
-interface CartItem {
-  product: mongoose.Types.ObjectId;
-  title: string;
-  price: number;
-  quantity: number;
-  image: string;
-  shop?: mongoose.Types.ObjectId;
-}
-
-export interface ICart extends Document {
-  user: mongoose.Types.ObjectId;
-  items: CartItem[];
-  updatedAt: Date;
-  createdAt: Date;
-}
-
-const cartItemSchema = new Schema<CartItem>(
+const cartItemSchema = new Schema<ICartItem>(
   {
     product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
     title: { type: String, required: true },

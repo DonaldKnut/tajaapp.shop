@@ -1,7 +1,7 @@
 import express from "express";
 import { protect, authorize } from "../middleware/authMiddleware";
 import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
-import { User } from "../models/User";
+import User from "../models/User";
 
 const router = express.Router();
 
@@ -117,7 +117,7 @@ router.delete(
       throw new ApiErrorClass("User not found", 404);
     }
 
-    await user.remove();
+    await user.deleteOne();
 
     res.json({
       success: true,

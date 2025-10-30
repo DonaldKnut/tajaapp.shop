@@ -243,3 +243,4 @@ ENCRYPTION_KEY=your_32_char_encryption_key
 **Remaining**: Integrate external services (SMS/Email/Escrow) to activate full protection.
 
 
+

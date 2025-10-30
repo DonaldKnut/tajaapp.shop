@@ -5,7 +5,7 @@ import {
   generateRefreshToken,
 } from "../middleware/authMiddleware";
 import { asyncHandler, ApiErrorClass } from "../middleware/errorMiddleware";
-import { User } from "../models/User";
+import User from "../models/User";
 import bcrypt from "bcryptjs";
 import {
   generateOTP,
@@ -549,7 +549,7 @@ router.get(
     user.emailVerificationExpires = undefined;
     await user.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: "Email verified successfully",
     });

@@ -108,13 +108,8 @@ export default function NewProductPage() {
       const [parent, child] = name.split(".");
       setFormData((prev) => ({
         ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]:
-            type === "checkbox"
-              ? (e.target as HTMLInputElement).checked
-              : value,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [parent]: { ...(prev as any)[parent], [child]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value },
       }));
     } else if (type === "checkbox") {
       setFormData((prev) => ({
@@ -798,6 +793,7 @@ export default function NewProductPage() {
     </div>
   );
 }
+
 
 
 

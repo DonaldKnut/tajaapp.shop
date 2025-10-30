@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { ICategory } from "../types";
+import { ICategory, ICategoryModel } from "../types";
 
 const categorySchema = new Schema<ICategory>(
   {
@@ -89,5 +89,9 @@ categorySchema.pre("save", function (next) {
   next();
 });
 
-export const Category = mongoose.model<ICategory>("Category", categorySchema);
+export const Category = mongoose.model<ICategory, ICategoryModel>(
+  "Category",
+  categorySchema
+);
+
 

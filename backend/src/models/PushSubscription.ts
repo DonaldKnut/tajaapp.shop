@@ -1,30 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { IUser } from "./User";
-
-export interface IPushSubscription extends Document {
-  user: IUser["_id"];
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
-  userAgent: string;
-  deviceType: "web" | "mobile" | "tablet";
-  isActive: boolean;
-  lastUsed: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IPushSubscriptionModel
-  extends mongoose.Model<IPushSubscription> {
-  findActiveByUser(userId: string): Promise<IPushSubscription[]>;
-  deactivateOldSubscriptions(
-    userId: string,
-    keepCount?: number
-  ): Promise<number>;
-  cleanupInactive(daysInactive?: number): Promise<number>;
-}
+import mongoose, { Schema } from "mongoose";
+import { IPushSubscription, IPushSubscriptionModel } from "../types";
 
 const pushSubscriptionSchema = new Schema<IPushSubscription>(
   {
@@ -129,6 +104,7 @@ const PushSubscription = mongoose.model<
 >("PushSubscription", pushSubscriptionSchema);
 
 export default PushSubscription;
+
 
 
 

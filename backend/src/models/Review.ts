@@ -1,5 +1,5 @@
-import mongoose, { Schema } from "mongoose";
-import { IReview } from "../types";
+import mongoose, { Schema, Document, Model } from "mongoose";
+import { IReview, IReviewModel } from "../types";
 
 const reviewSchema = new Schema<IReview>(
   {
@@ -105,8 +105,8 @@ reviewSchema.post("save", async function () {
   }
 });
 
-// Post-remove middleware to update shop stats
-reviewSchema.post("remove", async function () {
+// Post-delete middleware to update shop stats
+reviewSchema.post("deleteOne", { document: true, query: false }, async function () {
   const Shop = mongoose.model("Shop");
   const shop = await Shop.findById(this.shop);
   if (shop) {
@@ -249,7 +249,7 @@ reviewSchema.methods.canBeEditedBy = function (userId: string): boolean {
   return this.reviewer.toString() === userId && this.status === "published";
 };
 
-export const Review = mongoose.model<IReview>("Review", reviewSchema);
+export const Review = mongoose.model<IReview, IReviewModel>("Review", reviewSchema);
 
 
 
