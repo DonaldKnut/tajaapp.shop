@@ -206,30 +206,32 @@ const stats = [
 const testimonials = [
   {
     name: "Amina Okafor",
-    role: "Fashion Seller",
+    role: "CTO, Ailitic",
+    location: "Lagos, Nigeria",
     avatar: "/images/testimonials/amina.jpg",
+    company: "Ailitic",
+    companyLogo: "/images/logos/ailitic.svg",
     content:
-      "Taja.Shop transformed my WhatsApp business into a professional online store. Sales increased by 300% in just 3 months!",
-    rating: 5,
-    verified: true,
+      "They tailor their solutions to our specific needs and goals.",
   },
   {
-    name: "Chinedu Okwu",
-    role: "Electronics Dealer",
+    name: "Jahan Melad",
+    role: "Project Manager, Buildwave",
+    location: "Abuja, Nigeria",
     avatar: "/images/testimonials/chinedu.jpg",
+    company: "Buildwave",
+    companyLogo: "/images/logos/buildwave.svg",
     content:
-      "The verification process gave my customers confidence. Now they trust me completely and I get more repeat customers.",
-    rating: 5,
-    verified: true,
+      "They organized their work and internal management was outstanding.",
   },
   {
-    name: "Fatima Ibrahim",
-    role: "Handmade Crafts",
+    name: "Jim Halpert",
+    role: "Lead Engineering, InHive Space",
+    location: "Port Harcourt, Nigeria",
     avatar: "/images/testimonials/fatima.jpg",
-    content:
-      "I love how easy it is to upload products with videos. My customers can see exactly what they're buying.",
-    rating: 5,
-    verified: true,
+    company: "InHive",
+    companyLogo: "/images/logos/inhive.svg",
+    content: "Working with them was a great experience.",
   },
 ];
 
@@ -237,15 +239,28 @@ export function BrandShowcase() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [perView, setPerView] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const hoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+      setCurrentPage((prev) => {
+        const maxPage = Math.max(0, Math.ceil(testimonials.length / perView) - 1);
+        return (prev + 1) % (maxPage + 1);
+      });
     }, 4500);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, perView]);
+
+  useEffect(() => {
+    const calc = () => setPerView(typeof window !== 'undefined' && window.innerWidth >= 768 ? 3 : 1);
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
 
   const nextStep = () => {
     setCurrentStep((prev) => (prev + 1) % steps.length);
@@ -455,13 +470,37 @@ export function BrandShowcase() {
 
         {/* Testimonials */}
         <div className="mb-20">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
-              What Our Sellers Say
-            </h3>
-            <p className="text-xl text-gray-600">
-              Real stories from real entrepreneurs
-            </p>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <div className="uppercase tracking-widest text-xs text-gray-500 mb-2">
+                Our Reviews
+              </div>
+              <h3 className="text-3xl md:text-4xl font-bold text-gray-900">
+                What Our <span className="text-gray-400">Clients</span> Say
+              </h3>
+            </div>
+            <div className="hidden md:flex items-center gap-3">
+              <button
+                className="rounded-full bg-white border p-3 shadow hover:bg-gray-50"
+                onClick={() => setCurrentPage((p) => {
+                  const maxPage = Math.max(0, Math.ceil(testimonials.length / perView) - 1);
+                  return (p - 1 + (maxPage + 1)) % (maxPage + 1);
+                })}
+                aria-label="Previous"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                className="rounded-full bg-white border p-3 shadow hover:bg-gray-50"
+                onClick={() => setCurrentPage((p) => {
+                  const maxPage = Math.max(0, Math.ceil(testimonials.length / perView) - 1);
+                  return (p + 1) % (maxPage + 1);
+                })}
+                aria-label="Next"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           <div
@@ -470,111 +509,86 @@ export function BrandShowcase() {
             onMouseEnter={() => setIsPlaying(false)}
             onMouseLeave={() => setIsPlaying(true)}
           >
-            <Card className="max-w-5xl mx-auto overflow-hidden bg-gradient-to-br from-white to-gray-50 border-0 shadow-xl">
-              <CardContent className="p-0">
+            {(() => {
+              const pages: typeof testimonials[] = [];
+              for (let i = 0; i < testimonials.length; i += perView) {
+                pages.push(testimonials.slice(i, i + perView));
+              }
+              const maxPage = Math.max(0, pages.length - 1);
+              const pageIndex = Math.min(currentPage, maxPage);
+              return (
                 <div className="overflow-hidden">
                   <motion.div
                     className="flex"
-                    animate={{ x: `-${currentTestimonial * 100}%` }}
-                    transition={{ type: "spring", stiffness: 80, damping: 20 }}
+                    animate={{ x: `-${pageIndex * 100}%` }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 18 }}
                   >
-                    {testimonials.map((t, idx) => (
-                      <div key={idx} className="min-w-full shrink-0 grow-0 p-8 md:p-12">
-                        <div className="grid grid-cols-1 md:grid-cols-[120px,1fr] gap-6 md:gap-10 items-center">
-                          {/* Avatar */}
-                          <div className="relative mx-auto md:mx-0">
-                            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full ring-4 ring-white shadow-lg overflow-hidden">
-                              <Image
-                                src={t.avatar}
-                                alt={t.name}
-                                width={112}
-                                height={112}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Content */}
-                          <div className="relative">
-                            {/* Decorative quote */}
-                            <div className="absolute -top-4 -left-2 text-taja-primary/20 select-none text-6xl leading-none">“</div>
-                            <AnimatePresence mode="wait">
-                              <motion.blockquote
-                                key={currentTestimonial === idx ? `q-${idx}` : `q-hidden-${idx}`}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.35 }}
-                                className="text-lg md:text-xl text-gray-800 mb-4 md:mb-6"
-                              >
-                                {t.content}
-                              </motion.blockquote>
-                            </AnimatePresence>
-
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="font-semibold text-gray-900 text-base md:text-lg">{t.name}</div>
-                              {t.verified && (
-                                <Badge className="bg-green-100 text-green-800 border-green-200 h-6">
-                                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                                  Verified
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="text-sm text-gray-500 mb-3">{t.role}</div>
-
-                            <div className="flex items-center gap-1">
-                              {[...Array(t.rating)].map((_, i) => (
-                                <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                              ))}
-                            </div>
-                          </div>
+                    {pages.map((page, pageIdx) => (
+                      <div key={pageIdx} className="min-w-full px-1 md:px-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                          {page.map((t, idx) => (
+                            <Card
+                              key={`${pageIdx}-${idx}`}
+                              className="rounded-3xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow"
+                            >
+                              <CardContent className="p-6 md:p-8">
+                                <div className="flex items-start justify-between mb-6">
+                                  <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white shadow">
+                                    <Image src={t.avatar} alt={t.name} width={40} height={40} className="w-full h-full object-cover" />
+                                  </div>
+                                  <div className="flex items-center gap-2 rounded-full border bg-gray-50 px-3 py-1 text-xs text-gray-600">
+                                    {t.companyLogo && (
+                                      <Image src={t.companyLogo} alt={t.company || "Company"} width={16} height={16} className="rounded" />
+                                    )}
+                                    <span>{t.company}</span>
+                                  </div>
+                                </div>
+                                <div className="relative">
+                                  <div className="absolute -top-4 left-0 text-gray-200 select-none text-5xl leading-none">“</div>
+                                  <p className="text-gray-800 text-lg md:text-xl leading-8 md:leading-9">
+                                    {t.content}
+                                  </p>
+                                </div>
+                                <div className="mt-8 pt-6 border-t border-gray-100">
+                                  <div className="text-gray-900 font-semibold">{t.name}</div>
+                                  <div className="text-sm text-gray-500">{t.role}</div>
+                                  {t.location && <div className="text-xs text-gray-400 mt-1">{t.location}</div>}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
                         </div>
                       </div>
                     ))}
                   </motion.div>
                 </div>
-              </CardContent>
-            </Card>
+              );
+            })()}
 
-            {/* Testimonial Navigation */}
-            <div className="flex justify-center space-x-2 mt-6">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    currentTestimonial === index
-                      ? "bg-taja-primary"
-                      : "bg-gray-300 hover:bg-gray-400"
-                  }`}
-                />
-              ))}
-            </div>
-
-            {/* Controls */}
             <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between pointer-events-none">
               <button
-                className="pointer-events-auto ml-2 md:ml-4 rounded-full bg-white/90 hover:bg-white shadow p-2"
-                onClick={() =>
-                  setCurrentTestimonial((prev) =>
-                    (prev - 1 + testimonials.length) % testimonials.length
-                  )
-                }
-                aria-label="Previous testimonial"
+                className="pointer-events-auto ml-1 md:ml-2 rounded-full bg-white border p-2 shadow hover:bg-gray-50"
+                onClick={() => setCurrentPage((p) => {
+                  const maxPage = Math.max(0, Math.ceil(testimonials.length / perView) - 1);
+                  return (p - 1 + (maxPage + 1)) % (maxPage + 1);
+                })}
+                aria-label="Previous testimonials page"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
-                className="pointer-events-auto mr-2 md:mr-4 rounded-full bg-white/90 hover:bg-white shadow p-2"
-                onClick={() =>
-                  setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-                }
-                aria-label="Next testimonial"
+                className="pointer-events-auto mr-1 md:mr-2 rounded-full bg-white border p-2 shadow hover:bg-gray-50"
+                onClick={() => setCurrentPage((p) => {
+                  const maxPage = Math.max(0, Math.ceil(testimonials.length / perView) - 1);
+                  return (p + 1) % (maxPage + 1);
+                })}
+                aria-label="Next testimonials page"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
             </div>
           </div>
+          
         </div>
 
         {/* CTA Section */}
